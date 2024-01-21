@@ -447,3 +447,139 @@ let s = "abc"
 let t = "ahbgdc"
 let subSequenceResult = IsSubSequenceSolution().isSubsequenceByPreProcessingT(s, t)
 print(subSequenceResult)  // Output: true
+
+
+//: # Container With Most Water
+//: You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+//: ***
+//: Find two lines that together with the x-axis form a container, such that the container contains the most water.
+//: ***
+//: Return the maximum amount of water a container can store.
+//: ***
+//: Notice that you may not slant the container.
+
+class MaxAreaSolution {
+    func maxArea(_ height: [Int]) -> Int {
+        var maxWater = 0
+        var left = 0 // starting index of the array
+        var right = height.count - 1 // end index of the array
+        while left < right {
+            var w = right - left // distance between two poles holding water
+            var h = min(height[left], height[right]) // takes the min hieght of the two poles to hold water
+            var waterArea = w * h
+            maxWater = max(waterArea, maxWater)
+            
+            // if value of left pole is less than right, increase the left pointer
+            if height[left] < height[right] {
+                left += 1
+            } else {
+                // if right pole is less than left, decrease the right pointer
+                right -= 1
+            }
+        }
+        return maxWater
+    }
+}
+
+let maxAreaTest = [1,8,6,2,5,4,8,3,7]
+let maxAreaResult = MaxAreaSolution().maxArea(maxAreaTest)
+print(maxAreaResult)
+
+//: # [1679. Max Number of K-Sum Pairs]( https://leetcode.com/problems/max-number-of-k-sum-pairs/description/?envType=study-plan-v2&envId=leetcode-75)
+
+class MaxOperationSolution {
+    func maxOperations(_ nums: [Int], _ k: Int) -> Int {
+        var frequenctDict: [Int: Int] = [:]
+        var operationCount = 0
+        for num in nums {
+            let complement = k - num
+            if let complementFrequency = frequenctDict[complement], complementFrequency > 0 {
+                operationCount += 1
+                frequenctDict[complement]! -= 1
+            } else {
+                frequenctDict[num, default: 0] += 1
+            }
+        }
+        return operationCount
+    }
+}
+
+let maxpairnums = [3,1,3,4,3]
+let maxpairK = 6
+
+let maxPairResult = MaxOperationSolution().maxOperations(nums, maxpairK)
+print(maxPairResult) //output: 2
+
+
+//: # [643. Maximum Average Subarray I](https://leetcode.com/problems/maximum-average-subarray-i/description/?envType=study-plan-v2&envId=leetcode-75)
+
+class FindMaxAverageSolution {
+    /*
+     1. check if the array size is greater than k
+     2. find the sum of first k elements by iterating from 0 to k-1
+     3. find max average by dividing sum / k
+     4. sliding window
+        a. iterate the array from k to array.count - 1
+        b. find sum by taking current element and subtracting current - kth element
+        c. find the avg of sum
+        d. assign max average = max(currentAvg, maxAvg)
+     5. return max average
+     */
+    func findMaxAverage(_ nums: [Int], _ k: Int) -> Double {
+        if nums.count < k {
+            return 0.0
+        }
+        var sum = nums[0..<k].reduce(0, +)
+        var maxSum = sum
+        for i in k..<nums.count {
+            sum += nums[i] - nums[i - k]
+            maxSum = max(sum, maxSum)
+        }
+        return Double(maxSum) / Double(k)
+    }
+}
+
+let findMaxAvgNums = [1, 12, -5, -6, 50, 3]
+let findMaxAverageResult = FindMaxAverageSolution().findMaxAverage(findMaxAvgNums, 4)
+print(findMaxAverageResult)
+
+//: # [Maximum Number of Vowels in a Substring of Given Length](https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/?envType=study-plan-v2&envId=leetcode-75)
+
+class MaxVowelsSolution {
+    func maxVowels(_ s: String, _ k: Int) -> Int {
+        /*
+         Solution:
+         1. map the input sting into array of int by check if each charater is vowel and assigning 1 or 0
+         2. calculate inital count by taking the first k elements of the array and summing them up
+         3. if the input s.count is <= k then return count
+         4. create an maxCount and assign count to it
+
+         5. in a loop starting from k to array.count - 1
+            // sliding window logic
+            a. calculate the count by subtracting count with array[i - k] and adding array[i]
+            b. assing maxCount by max of count and maxCount
+         6. return maxCount
+         */
+
+        let array = s.map{ Set("aeiou").contains($0) ? 1 : 0 }
+        var count = array.prefix(k).reduce(0, +)
+        if array.count <= k {
+            return count
+        }
+        var maxCount = count
+
+        for i in k..<array.count {
+            count = count - array[i - k] + array[i]
+            maxCount = max(maxCount, count)
+        }
+
+        return maxCount
+    }
+}
+
+// Example usage:
+let MaxVowelsSolutionInputString = "jwzrlilhzmrqylnamfsnloxyyznoxwdfqurynyfhhojqufxbxbccxenqxfmuyyhrjtrzdilavcbcqhwqmwokowagrrchlvhydqamlqdkpobttmvsoqmhvfcalifiiwsdwpnrqkwpaflmjdoihyufzzikjmxsxuenpvoindyhahilrlrxemlnvzucnozwoekdyngtioqrtivvfkwqvmearwuonzblhoocqobvbgxasqvtlkllypkcbnnsktzetiavhnsqiewtymzniwdnfkivggbnzseuittqyxtwikjnjzytbgrjdwxxvvjwlcwzrntcjrmvsdmfkcusthtfqqaxumtmfomwnkqorwamkkidfcdnxxwmymclykuecxgfwighnefypvfhidysysiwhrgnnquwzkgrcbrczypnziebbktnxojywqbovrrhtqmigoozlhmmvbbuflzzkybvdjmbsasdbmmytcycdfvxwiklimkaueholijewtshtgyncaocaoqzwcqxjhicsgwdduaxvpiggwtmcpxhjhaqeeoaamqzkgiimcfcawlbovjdacabxbxlvsnabpnkkwldbxkbbcnfgwlbgxjbbkjpbodgstaxwsxqgpnjlmrabchbsopglhisskvyyjpujashhubeuqlnqowmkfemddtnqbcktjhzvothzwihqamxddewnudsrjfxsdmvhacirpagnzgexhiktpabronxgujipoquveduqdtivectmltzbafqbtisbnzqgomrkgscohwhehiucvkalylftqhqllwlaxrmpsymifyhbfhdenkvwbsldnczvnlbknesjfrphcnzmoeiluynkrsswnyznfkahxytyhbcqlckcdxwxmbyddyumdylizeampeafizbqulajrygttfqsqmlrpuippbeldocqonkceagidbykencnotxykxhmxwvjkzrqpkhqpgojxikvvirlstthczopwdiorkyutmslnxbotnoxszqlhbbfywazrdokyasurjwhruzuavdxhmojpqfcyttqotopwsycpweyqsqxojcaymjrlatojdcbvhzdptakylgbfxvukryolmwlbaocnrgaooewfvimnaszjswofcicgqwtapvtjjiuyqpyupkfywtssbahmxonadgqncjqtyvkbomdklxybbqwhrasrtnmbpfxnivcwgfuvmhirnzfuladhwazngiwcdaaaycrrufmloegodfxieppqyesiebwtzquwmxkligoklprwrvdezpplzyndzdwdihsbhlbhegjpkbcxrucmutlsbruchtcntdwanzkykzksjawqmzuldiazvpckgfjzkekprrqzapnsmxzvosxnqujkomqimgjudcxyxiqmzkslfskrffhvwwyrdbzuttxkvpvdmfrcyrdxgyezlqnipmbzgbpyaczwknrzjjfetnuzzakwyfsndggyyzubzojtgqbnmkgomckycynjltvjanedurwsphuduvuicgsftuzusegzxplguyyagzzrxsvulqshikjvptdwhobqhjxzdgcsotcsswzutyruwodmnawthrxtzqmimkqsgglofnriqamjfrpjjzshdjvwqghougsoaoteuifuibrtxahscaxfyzwcnpcelrbjxgtkdddmdrafzctqgmcomplavyxvehzipgskaraisclfuybdfkgflbponbmrbrwiibcylgsmrmwuktyxfswqcrbyqswidlgmygrpngobgajwyppgicgebizlkyctpqgooaxwquipkvjjqkqvustyeigyxwrvmflarqrsrttyuvxokysiwoiqnfxlcavruzdwwbcvklxorttrozggagzjvigybscjbrvwhkpracziuydycsmpvppvulwjzgqdpnctbemietmgsbckkjqjlsdbvzeupguqxuklommbrjbjuofkujyiwidctrpsrouswzurxixaxfbhhcqnvxadhdahwpbpydilugliumdxibslrqjmaiykwlhzmrykrxrkwtmqjplqxhrqcnifnekyjepcnhotojrjhyldbmhejyoxveqcvnchwxbxlqjofrdvwyhjxosixrtfdzhwxaaplekbrpscqryisuhrlujzcuujnmceeurbxkkwpgsvbwhyigutzeqadhokxpvxhykokvepggwklmpoymsltsfytbylbrzuzpcfxtntdlnxzjpbqkihwsotvxplklvwddgcqjzxxgcsktkznecdqlkbhrgmtjxkwtlfoxycafhooypxmomqljkrzrmzjwizvxnucoyywthwxxigsyucngecwlwpwxasqwfmyqfwfmetuamcjzzogqizmjbvsfwlltrvjfmbdntaanqduwnghaupdmlcqwunnrpufjamxcxinolkrntbcfpclvqctzjifvesjcffyapocptqiifvtblqphzrssaldzrmaouhhuquiknrvbttkqhwcfebvttnxvyimyfbwlxmwntwlbmlspkyglqrfpvrkrvxmdnynlnyzeilahbxrzskcqmmagvepviogthmwxgthbneatmjkyrcyouacomfbxlbbckfkrgqaefwwhetucdbyxwphlcxwzokepfytgrhzyiciushrxfohekgdhnxwitwjxiklxsxqfaairucjajwtgdrgqwmxceogeelcmvsuhndjggsljcvcyrbvxcdxsszciefykonnkjokkdggyksommmxjhartrfvfghfihzsjivpujveqbtxjzavwnznfyggujqavnwgxkaovmqdnjeqqlcvjzptuecssulzghhqmfndyghqcikxwlmewhuqpmroswdgayzuqstjgwfypuoqsqnxeyftsghwmdwkutdqkiaxlrrveckcspbbgdyccqocwnyvmvysewnybutfguctlvucekadpdmpsjhxqaytzokegrbtyxvwksedjnokkqwhfvszjoalksmxavrdrewmxnactajirxfxvambpeuxfusvfzhfrkiefpuyyhggknjgfuhyjpzfpccvzvuimitpsliwxglceomadzsgtpuiulxtzdodrgmavupxksuffdqpnwiqynvdzntdrqdeutbriwrewjxhcjdqerbresnxalyftbegjokjutltodtsfokakmcxvcmmjitcmhvhuxboveaqdomuahqwfnlrsqobhoscgznndvmcrptgtlgpqlcgctfmmmpszdjbwrxdmgkajiwhzxroeqddfpwtodgzezoaqtakfjhnbokchyuwnaozetyjlgnyddulzuavicbhfkdvlckkeadvepiyetbmqdngasgivotwwgowvhazejrgouakfuqjwpscnzxrosjwcqdsiawvshouomqvencrzenzjutpvffiocdubpqbbabppndfrizxbphsnqgyzyebcapomkvwxoceibcteimydxgmeruhoohscddippyhhhefwyfwgiqohowibemattbwpeefkjjlwnszvswiuenjnlgmsvkcnmfkanlhkdfmrvtcvqaztackqaekdqdfifskvgatvkabokvrfyshhpnmyvatnlnhsuovyfrdnopovvihgeltaalirnjqtrowkuxvxykwzeheabqbmcifpbmiwsfpelanwtjwsnaqoezcqdrzegulkcwggkgddbejysiwpmxzvjdchlzuezgfudqzlinljunphiccplziogcevkpuvirdspzfgitaeczmracxiwqkvtlndkeyrgyfqodyhjrnprmzjfarkbicqclpzyklkazppptuauwsygsmlrsykkrgoaexolmmerjxslgfuawxlrqaxihwmdwdjgmdpfjcdnshbgesuwymdxliuzfzyfhvbldfwzayxfemxmtdxtlmqpoeqsozwkljdqglgkrnkyoyuivdsrhkvnfyiypwhdwldamtuoyredsesgbgcwsxpcgjkbkmkdwhoykjowdkqgcvyyexpgidpylsbchnpmyajtqunanlefwleheciqcwpyijzmscmxqmzgmlbavbyaioorppqkhrnqmqkfexvnmyqyuaanthvvuppoxjyejvjgheuobicuisojrmmcjrhkljcdoykwppqfgdhugiyveeeipjbebdxexjiwmdmvvnpoyrlznhswqivzfckeavazfyrrwsnrofbahhhmmkfjqnkopfavqitvdgcolxziethjqptvxxukoqeibfaxdyyyqfuwznfyqjcxbmyjcjmxcnqgofpexlgrputobbspqmuazjcmomtotqarzjhzzeeuqlkdkhqwwbfhyyjnajuatwyvsxytlimbthiykdhmiaycyvdhoijapnobjfkcbcfmkmybiwtxkeloygvmimrvjsmqmdanxtaehpcikzfcxxamjkujylrutmmcvsnmnstskwrnqlkulzpydygiqdrzgtgevxhdxznabatdjbwobgiqiejdodkeycavftzbsfldoiuasmrqrhfnvfjinnqaorpgcaomlctvplahgfjnubhjdgpoeptljdzdyddpkzunskjnldfgowppuhpricprbzjwkesylvzizspwghfzoyublviaqadxekgtigyobyyhfbbfjtbnswkueguczuzzfabbtwcixhontfqcomnoszqgpqytkwkzcgncxvsauummkworuuwalemwrcmmyjfqrioumrdgzyupudwgxeguwmpxopvsdohfpbcfemthdzhwtpdapsfkkqfefyfndkvbiubvvuonrockyrnsgfqbyaixbcozqyaavybzdhsfjmtocaovvnxexjljedwkkmmovdutvuwslscxzgkrrovbhrelwqhzebzmlwkqvceoicolnvtchfgudbvlkotbepzcukyhumwhnvjtjopizakncehmxxxjrxpaxjfgsbwstvcqgwwlmspuxqyxjyvihkmxviahnrrnanxkzoukbpwqkbfenuvbppgojxskgianetopnylnbtnpajyddqcyzclmurfrztmksxvpowuvgbbqvokkmrnesyzadeqhhudcylpcshvdvghpaumnywcxkxbcullmoifphrvbapvufavvfnmyhgivmdornkfjxkgshpxscncwepjirrfdznmbxfuvokrhpfcljzqvyltcjpcyxyzwkyapzspraiouqcorobvajyfiaftbnhhtaisxyztetxclrokwjtwyqaalyvhhrnpfddofmarwjrwmiigbqgxboxtykufjefbkeskstwjxgdlryjnvxqxmwxkzgwscsybmolxafwwgfphgevmgxipybrycgpjhabspahiidtnezkkaiwgtbgiootvtwntbojptjgeqmggushbhzxkzxenycjxskyuvhcatiiilfmgotecacqnpjagxrejipxvxgdqbcwbeaxdmnqgjjddxdndyvylqhdddjlrtqqspogifizgsopapyojoaqhfomeacdljzwhpqcsekbsgccxoskxugijjsstapppkyafkxzmfoebqbgvsakcxzvfibdsqhljpvhqethbabeofpasiujyowtvdmcftvjpmhvtuscqycahdlnbnqjxfhzwupzuiaswwwyzlvdbosqicktehwqrmwjcjhvbkkalpoywwuhwzwlncvsycbvluwzedjtagaaumnscksomurmzmsvgbjhykeanhshbvppwssiogvbqwnchyvftqkcxpeaswieygyxwhjywrfewepardplrhqbqwunimgieeyfunfasdvykrrsgvceddhckeeenmxtijfqfottvqjbvofunqodartyvujlhqeazbztrdsaeokkauzutiehxnsldjogkfqrogabnkzzikkozmwshrvibobcodlgfglydbserpzomoxvdmoscgfvdwjzkfxzggprukivuaqfvekfvlgibxggunqeixacaorzbidsrjagddmxbxnweujamaezuztqziudypnhfueyjipnrpbxitmfzugymyolfyeoqhjbtvhtsjmvyrylujuhuxgqrfglaaffepjjqqsilutzmgombaqpxgnmwaljtmfhfoljfjqgioqmzshdjyxrfcmlnyrhbpqtccciysnjqychunqtubeyfclvohlklokceunprugkrhgrtxjczhlrcbuamloatmypvdhjyppueibsfzyalnxtgbbjauhwiwicqaayxohxriimhtvqykvdnqktukirjlsqlrqyrtfgxbtitnceuykwqlxpowprhswqelkknrqinrvfjwrfdiqbzsqhmzbytulgnpqqgxnhcdzijivpxioyigxyjdynriucdocplfrqtbvbmtoaqvxezkhsugsalmkscdhgwshqfrxnshbokfzyrrazvcmlfnklolsdzpdmudghcpudvqzxvcmlagwxzybbwfnmjzlmzbyxgwhipqllfwrayqivjrmbtwihxvsydujgbvlkbxhkdpqpkywtiodcuseeyrpxnpynvihhxmcrflznovbzoakdemyuhvzjlishcfxgqhuvunluflrzrpkjdjvsjlzpctlqgshricceewbilcldewmrdzaocgsigcafrrwcdwoxaceqgiojfbglbhxdfgbsmibbtxmgvqpbcjjtmqkdfokpqvopjbmlzaypjzrbgbgtiryxtkuruuvtganatsytgmrnztqmznqpnghaoaoqrjvfzgmpdnvsiwizsgfgpaxnziwzcgmfhdelfhknfmeugyejavmctyympnpkhnalmdcvjerdgevdgbuphfgbmazwhqzsordvcaokybwkonguunrvugfimvzrfawggejsehisetmidykocdqgdagxedhoriowjikfyqjlkvysmvpnjqjjvggvchnnlltqpbuixhhlewglpuqirbxrcqxjmmfjddixrwtpqpunvzqbjzbqgvexpwjzrdbvgxgqjpmwrygelolyfnbsltkdyhtxywsnpirecwxdtpdzspvzktxallfhwxfdbnrugovhluoqwneofkivjcigngsxcmulmxebhjmkllubsdswrykrdpzmoznilaxjujzsreqvtmejnnyioqiimxgqynrtwckinybqhuvojwxptabsobbxuwwkvopxrqllounzhsmouefgodeqdescqiakrufversotxmuasbstwwxuqvoxdyfqqtnmybvauxfhaonitbqjzsfgyhvqgvvwryrxwlxhpqyayutabcnhobuoyqfajabgpulgdcwqryfcmpjgzlvztgsrkrckbcrtqsfgvkqxgeaklcpnaqhpqptyduzxrgpdfzttzpbxbzxvexhjczmfbrdoaahqhguhrhblxqcsttjxozubdfngfqkqcmaetlwjklrivlelqawxzzmgywwzmfpppwbgkqmbysflcmyxkecstwwulrelqlvctdcarbrivydckvkdygggvaexskkgtnnsrtrcqxccqzdzoewqsifoflcvubtivjjwzcjjaxbcowdlssfjaceleopjvldxezaewktvghpzrizedgalemmwfxicuqienvugufgtxmgtmtopjslvfnhimxuuyihmrebvrsmqpdgwnmutcorsfbfoihtbycsnnmjcabmhwcgrzhtxmwyqokzwanzneqjolghmgvyyjpxxueovynyuikrpkkzyzvtqvwhfyonuuhbxwweqjnurkxylpvamlfknlazqpeieaewlylgpqkprpbkxioesvxgcbkbkknpszrvhxdogtyxgphzrdinfpnrktciqocpxwmownqmsakcaqoiozyjiqwskqvdblcdlmnadtrbycwdjbvaxzjaabvpvppjmnxzznujokwaqwdhjyivrxypkpfejyskwxqfexyvgmbwaynrrwkvghluirdncpeqgfkwbfrmruqnirlckfhrjxwtaqadmqgbisqqtnsvhupwxrfpjmtkwebgmsoxbbfhlejvhumfbootjlzoowrdlspvwzrnpmjmnlafhfylwhhudewzjtcnxxemjuhzwnzybrwgxeairkytnhiwnqlebolcftbsbqhndhevvsiwewtxdstmhilwutrnxilwyqcsktmglicojzohgsdyelvvmpcwstuoguevcuswipfdlgpxvrqwindhuxqckzjrxvauxzbxdeujjzvzgujagiuxgkzyhxwpxqplkempigipbtiwwtpcvmcomtarkdzoguraqehgzgvuxdpbqdidroedmyclllegicnxlyjxwmfdtoyiprjswyrgxfpkmcriapprtcglpkbfmfiiqezfjitrskqvuureqgfevuvhtwuhdbroaexkjqpwkgyjlojjgucbckwgtquuetnqbyqjvjiulocflylutyoamkrrmxexlhfvvjqiiaalpggxjwxxodjedihidqwzpwcyycjylbkyosqkvtxsbvljiwynjjtwyllryybzubcfqyxrusviqbvbdjmusuoggazvwgdcidaeylgudyjnunmxqoziimljlkildihekdzubfvopoypgvfkxpfwhakgjfnwlqmqpmoxwpjyqkdrdoifhlxgnyuvrpydhlgnjznbckyxdnzllqiwisivuvqvzkyeuvusqctcbchladsxitjjsafraiinltujusbtxwjqrfqiroqssqkwilmgfrlwxfpzexcflnaevwyoarfivhkuimngphdighgqekerxbrttcmmhmernqycokntmvgvzmrvpajsmjnfxqdtpvtzaezhmowuivbyfggvydzoavvphrbpuknaizcvtrccgkvwjxqmwyrgcjxvynhjrlskctvgfqwxztnpmbwpmghwxuajbcxnwqvojfqvzzqkvjbzwhyknfasurxhjzfwnkhufvnndabzmxwuimtalzdshoxrzcnblzmkdanuxksdqafkprrbniifzeeipyqxppjtsneqbleuyhvnjljkvidxynmydcveopysfdtalenxdjojdtapxndobrjhfxwuwqdmoulzjpbgqllqhjuiriwyswokjjviucuxkuluobtmmsqqyxxuewmwrdbgwrdckxmjsqywnuwlbrsjdrgczkgcmbfmibgdbicmhzpvufbcneyhmjjdbdnnujausticecxihzsabzbffveyfewzzhbuokolvvxweuhvdnmvylolxyxzvhvsirnuienakmrjslokyaklbgrxlzgjjrfqjjynecwwdjczpvoqpudmyuifgpukcwvheqmmkxnjikhgxumlbqrzvqovtxbwkpyltgzuxiocxwpqdnqultjilswovpnmvsidfdyzgihjyioxrsadnbmaaxdfnggxrggmqhibocjlhkixiseiwkxizscawhtqwsaiyaswbiqitcgpvrtaijkszekzklirdxyxfmzraddlnromcdqdvnjzroqarfekwjvqahadidvuhdixswivifnrnrtjvhonssrxkskppzowhipwfjczlyvzrpqtdwfjabsmuaaonmycliqmxawtwuqpjxlwnjckobrvzehsimxakawqmbccdtckbqmezuzweposemwhkwvecvkgisclzgxxammgznzbbhjaofqxesaifylpkpvsskunzwzpmqymsexclragbjubtlyzivovnhwakndvoayrxyyjobdmgdqdpslcwfdjzyqzieuugrfelipbkcjqjbfsifxiqgrjobqofmcmoqjzpvorvhdrkhabideqmizjpqmwnccvqssrenwqtcshurnmlidmcjlytzchrsgqfuqiwqbvdhwlmglxpwikodlwazpowzsqmwcvfeqjxcsqyfxhmlxwxcmmediioftdmxovsjqinidfqazzsbicnrzhebwlspecpaoedebng"
+let MaxVowelsSolutionSubstringLength = 100
+let MaxVowelsSolutionResult = MaxVowelsSolution()
+    .maxVowels(MaxVowelsSolutionInputString, MaxVowelsSolutionSubstringLength)
+print(MaxVowelsSolutionResult) // Output: 3
