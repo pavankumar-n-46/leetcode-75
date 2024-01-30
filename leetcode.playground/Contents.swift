@@ -555,7 +555,7 @@ class MaxVowelsSolution {
          4. create an maxCount and assign count to it
 
          5. in a loop starting from k to array.count - 1
-            // sliding window logic
+            // sliding windo    w logic
             a. calculate the count by subtracting count with array[i - k] and adding array[i]
             b. assing maxCount by max of count and maxCount
          6. return maxCount
@@ -583,3 +583,40 @@ let MaxVowelsSolutionSubstringLength = 100
 let MaxVowelsSolutionResult = MaxVowelsSolution()
     .maxVowels(MaxVowelsSolutionInputString, MaxVowelsSolutionSubstringLength)
 print(MaxVowelsSolutionResult) // Output: 3
+
+
+//: # [Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/description/?envType=study-plan-v2&envId=leetcode-75)
+//: ***
+//: Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+
+class MaxNumberOfConse1Solution {
+    func longestOnes(_ nums: [Int], _ k: Int) -> Int {
+        var left = 0
+        var right = 0
+        var zeroCount = 0
+        var maxConsecutiveOne = 0
+
+        while right < nums.count {
+            if nums[right] == 0 {
+                zeroCount += 1
+            }
+
+            while zeroCount > k {
+                if nums[left] == 0 {
+                    zeroCount -= 1
+                }
+                left += 1
+            }
+
+            maxConsecutiveOne = max(maxConsecutiveOne, right - left + 1)
+            right += 1
+        }
+
+        return maxConsecutiveOne
+    }
+}
+
+let conInput = [1,1,1,0,0,0,1,1,1,1,0]
+let conK = 2
+let conOut = MaxNumberOfConse1Solution().longestOnes(conInput, conK)
+print(conOut) //Output: 6
